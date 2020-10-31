@@ -31,9 +31,7 @@ Router.post("/createNewVictim", function(req, res) {
         is_employed: 'required',
         ikiciro_ubudehe: 'required',
         isibo: 'required',
-        village_id: 'required',
-        cell_id: 'required',
-        sector_id: 'required'
+        village_id: 'required'
     });
 
 
@@ -58,11 +56,9 @@ Router.post("/createNewVictim", function(req, res) {
                 req.body.is_employed.toLowerCase() == 'true' ? 1 : 0,
                 req.body.ikiciro_ubudehe,
                 req.body.isibo,
-                req.body.village_id,
-                req.body.cell_id,
-                req.body.sector_id
+                req.body.village_id
             ]
-            let sql = "INSERT INTO dms_victims(victim_id,victim_pin, first_name, last_name, gender, age, marital_status,family_members, primary_phone_number, secondary_phone_number, national_id, is_employed, ikiciro_ubudehe, isibo, village_id, cell_id, sector_id) VALUES (?);";
+            let sql = "INSERT INTO dms_victims(victim_id,victim_pin, first_name, last_name, gender, age, marital_status,family_members, primary_phone_number, secondary_phone_number, national_id, is_employed, ikiciro_ubudehe, isibo, village_id) VALUES (?);";
             dbConnection.query(sql, [inserts], (err, results, fields) => {
                 if (err) {
 
@@ -80,7 +76,8 @@ Router.post("/createNewVictim", function(req, res) {
     })
 })
 Router.put("/update/:id", (req, res) => {
-    let victim_id = req.params.id;
+    let victim_id = req.params['id'];
+    victim_id.trim();
     const validation = new Validator(req.body, {
         victim_pin: 'required',
         first_name: 'required',
@@ -94,9 +91,7 @@ Router.put("/update/:id", (req, res) => {
         is_employed: 'required',
         ikiciro_ubudehe: 'required',
         isibo: 'required',
-        village_id: 'required',
-        cell_id: 'required',
-        sector_id: 'required'
+        village_id: 'required'
     });
     validation.check().then((matched) => {
         if (!matched) {
@@ -118,9 +113,7 @@ Router.put("/update/:id", (req, res) => {
                 is_employed: req.body.is_employed.toLowerCase() == 'true' ? 1 : 0,
                 ikiciro_ubudehe: req.body.ikiciro_ubudehe,
                 isibo: req.body.isibo,
-                village_id: req.body.village_id,
-                cell_id: req.body.cell_id,
-                sector_id: req.body.sector_id
+                village_id: req.body.village_id
             }
 
             console.log(inserts);
@@ -134,8 +127,9 @@ Router.put("/update/:id", (req, res) => {
         }
     });
 });
-Router.delete('/delete:id', (req, res) => {
-    let victim_id = req.params.id;
+Router.delete('/delete/:id', (req, res) => {
+    let victim_id = req.params['id'];
+    victim_id.trim();
     if (!victim_id) {
         return res.status(400).send({ error: true, message: 'Please provide a user id' });
     }

@@ -1,157 +1,102 @@
 const app = require('express');
-const { v4: uuidv4} =  require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 const Router = app.Router();
 const dbConnection = require('../config/db.config');
 const { Validator } = require('node-input-validator');
 // let  payloadChecker = require('payload-validator');
 
-Router.get("/get",(req,res) => {
-    dbConnection.query("SELECT * FROM dms_victims",(err,rows,fields)=>{
-        if(!err){
+Router.get("/getAllLevels", (req, res) => {
+    dbConnection.query("SELECT * FROM dms_levels", (err, rows, fields) => {
+        if (!err) {
             res.send(rows);
-        }
-        else{
+        } else {
             console.log(err);
         }
     })
 })
-const generateId = () => uuidv4()
-const generatePin = (district, sector) => {
-   const district =  req.body.district;
-   const sector = req.body.sector;
-   const cell = req.body.cell
-}
-Router.post("/createNewVictim",function (req,res){
-    
+Router.post("/createNewLevel", function(req, res) {
+
     const validation = new Validator(req.body, {
-        victim_pin: 'required',
-        first_name: 'required',
-        last_name: 'required',
-        gender: 'required',
-        age: 'required|integer|minLength:1',
-        marital_status: 'required',
-        family_members: 'required|integer',
-        primary_phone_number: 'required|integer|minLength:12|maxLength:12',
-        national_id: 'required|integer|minLength:16|maxLength:16',
-        is_employed: 'required',
-        ikiciro_ubudehe: 'required',
-        isibo: 'required',
-        village_id: 'required',
-        cell_id: 'required',
-        sector_id: 'required'
+        level_title: 'required',
+        level_system_users_counter: 'required',
+        level_short_bio: 'required',
+        level_status: 'required'
     });
 
 
 
-    validation.check().then((matched)=>{
-        if(!matched) { 
+    validation.check().then((matched) => {
+        if (!matched) {
             res.status(422).send(validation.errors);
-        }
-        else if(matched){
+        } else if (matched) {
 
-            let inserts =[
+            let inserts = [
                 uuidv4(),
-                req.body.victim_pin, 
-                req.body.first_name,
-                req.body.last_name, 
-                req.body.gender,
-                req.body.age,
-                req.body.marital_status,
-                req.body.family_members, 
-                req.body.primary_phone_number,
-                req.body.secondary_phone_number,
-                req.body.national_id,
-                req.body.is_employed.toLowerCase() == 'true' ? 1 : 0,
-                req.body.ikiciro_ubudehe,
-                req.body.isibo,
-                req.body.village_id,
-                req.body.cell_id,
-                req.body.sector_id
+                req.body.level_title,
+                req.body.level_system_users_counter,
+                req.body.level_short_bio,
+                req.body.level_status
             ]
-            let sql = "INSERT INTO dms_victims(victim_id,victim_pin, first_name, last_name, gender, age, marital_status,family_members, primary_phone_number, secondary_phone_number, national_id, is_employed, ikiciro_ubudehe, isibo, village_id, cell_id, sector_id) VALUES (?);";
-            dbConnection.query(sql,[inserts], (err, results,fields) => {
+            let sql = "INSERT INTO dms_levels(level_id, level_title, level_system_users_counter, level_short_bio, level_status) VALUES (?);";
+            dbConnection.query(sql, [inserts], (err, results, fields) => {
                 if (err) {
 
-                    res.status(401).send({error:err.sqlMessage})
-                    // throw err;
-                }
-                else{
+                    res.status(401).send({ error: err.sqlMessage })
+                        // throw err;
+                } else {
                     console.log(results)
-                    // results.send("row inserted");
-                    return res.send({ error: false, data: results, message: 'New user has been created successfully.' });
+                        // results.send("row inserted");
+                    return res.send({ error: false, data: results, message: 'New level has been created successfully.' });
                     // console.log("Row inserted: "+ results.affectedRows);
                 }
-              });
+            });
         }
 
     })
 })
-Router.put("/update/:id",(req,res) => {
-let victim_id = req.params.id;
-  const validation = new Validator(req.body, {
-        victim_pin: 'required',
-        first_name: 'required',
-        last_name: 'required',
-        gender: 'required',
-        age: 'required|integer|minLength:1',
-        marital_status: 'required',
-        family_members: 'required|integer',
-        primary_phone_number: 'required|integer|minLength:12|maxLength:12',
-        national_id: 'required|integer|minLength:16|maxLength:16',
-        is_employed: 'required',
-        ikiciro_ubudehe: 'required',
-        isibo: 'required',
-        village_id: 'required',
-        cell_id: 'required',
-        sector_id: 'required'
+Router.put("/update/:id", (req, res) => {
+    let level_id = req.params['id'];
+    level_id.trim()
+    const validation = new Validator(req.body, {
+        level_title: 'required',
+        level_system_users_counter: 'required',
+        level_short_bio: 'required',
+        level_status: 'required'
     });
-    validation.check().then((matched)=>{
-        if(!matched) { 
+    validation.check().then((matched) => {
+        if (!matched) {
             res.status(422).send(validation.errors);
-        } else if(matched)
-         {
-// console.log(victim);
-         let inserts =
-       {
-         victim_id :  req.params.id,
-	    victim_pin : req.body.victim_pin, 
-	    first_name: req.body.first_name,
-        last_name : req.body.last_name, 
-	    gender : req.body.gender,
-	    age : req.body.age,
-	    marital_status : req.body.marital_status,
-	    family_members : req.body.family_members, 
-	    primary_phone_number : req.body.primary_phone_number,
-	    secondary_phone_number : req.body.secondary_phone_number,
-	    national_id : req.body.national_id,
-	    is_employed : req.body.is_employed.toLowerCase() == 'true' ? 1 : 0, 
-	    ikiciro_ubudehe : req.body.ikiciro_ubudehe,
-	    isibo : req.body.isibo,
-	    village_id : req.body.village_id,
-        cell_id : req.body.cell_id,
-	    sector_id : req.body.sector_id
-    }
-    
-console.log(inserts);
-if (!victim_id || !inserts) {
-    return res.status(400).send({error: victim, message: 'Please provide victim and victim id' });
-}
-dbConnection.query("UPDATE dms_victims SET ?  WHERE victim_id = ?", [inserts,victim_id], function(error,results, fields){
-    if (error) throw error;
-   return res.send({ error: false, data: results, message: 'victim has been updated successfully.' });
-})
-}
+        } else if (matched) {
+            // console.log(level);
+            let inserts = {
+                level_id: req.params.id,
+                level_title: req.body.level_title,
+                level_short_bio: req.body.level_short_bio,
+                level_system_users_counter: req.body.level_system_users_counter,
+                level_status: req.body.level_status,
+            }
+
+            console.log(inserts);
+            if (!level_id || !inserts) {
+                return res.status(400).send({ error: level, message: 'Please provide level and level id' });
+            }
+            dbConnection.query("UPDATE dms_levels SET ?  WHERE level_id = ?", [inserts, level_id], function(error, results, fields) {
+                if (error) throw error;
+                return res.send({ error: false, data: results, message: 'level has been updated successfully.' });
+            })
+        }
+    });
 });
-});
-Router.delete('/delete:id',(req,res)=>{
-    let victim_id = req.params.id;
-    if(!victim_id) {
-        return res.status(400).send({ error: true, message: 'Please provide a user id' });
+Router.delete('/delete/:id', (req, res) => {
+    let level_id = req.params['id'];
+    level_id.trim()
+    if (!level_id) {
+        return res.status(400).send({ error: true, message: 'Please provide a level id' });
     }
-    dbConnection.query('DELETE FROM dms_victims WHERE victim_id = ?', [victim_id] ,function (error, results, fields) {
+    dbConnection.query('DELETE FROM dms_levels WHERE level_id = ?', [level_id], function(error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'User has been delete successfully.' });
+        return res.send({ error: false, data: results, message: 'level has been delete successfully.' });
     });
 })
 
