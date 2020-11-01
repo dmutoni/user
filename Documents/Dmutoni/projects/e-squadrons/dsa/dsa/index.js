@@ -3,8 +3,9 @@ const locationsController = require('./controllers/locations.controller');
 const victimsController = require('./controllers/victims.controller');
 const usersController = require('./controllers/users.controller');
 const levelsController = require('./controllers/levels.controller');
-const highRiskZones = require('./controllers/high-risk-zone.controller');
-const donations = require('./controllers/donations.contoller');
+const highRiskZonesController = require('./controllers/high-risk-zone.controller');
+const donationsController = require('./controllers/donations.contoller');
+const reportsController = require('./controllers/reports.controller');
 const dbConnection = require('./config/db.config');
 // const cors = require("cors");
 // const { Validator } = require('node-input-validator');
@@ -24,8 +25,9 @@ app.use("/api/users", usersController);
 app.use("/api/victims", victimsController);
 app.use("/api/levels", levelsController);
 app.use("/api/locations", locationsController);
-app.use('/api/h_zones', highRiskZones)
-app.use('/api/donations', donations)
+app.use('/api/h_zones', highRiskZonesController);
+app.use('/api/donations', donationsController);
+app.use('/api/reports', reportsController);
 
 // app.get("/",(req,res) => {
 //     res.json({message: "Welcome to dms application. "});
